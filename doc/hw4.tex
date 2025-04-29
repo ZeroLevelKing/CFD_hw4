@@ -10,13 +10,99 @@
 
 \begin{document}
 
-\title{计算流体力学第三次作业}
+\title{计算流体力学第四次作业}
 \author{朱林-2200011028}
 \date{\today}
 \maketitle
 
+
 \section{数理算法原理}
 
+\subsection{控制方程与边界条件}
+二维稳态温度场满足拉普拉斯方程：
+\begin{equation}
+    \frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2} = 0
+\end{equation}
+
+\textbf{边界条件}：
+\begin{itemize}
+    \item 上边界 ($ y=12\text{cm} $)：$ T = 100^\circ \text{C} $ 
+    \item 左边界 ($ x=0 $)、右边界 ($ x=15\text{cm} $)、下边界 ($ y=0 $)：$ T = 20^\circ \text{C} $
+\end{itemize}
+
+\subsection{有限差分离散化}
+\subsubsection{网格参数}
+\begin{align}
+    \Delta x &= \frac{15}{N_x-1}, \quad x_i = (i-1)\Delta x \quad (i=1,2,...,N_x) \\
+    \Delta y &= \frac{12}{N_y-1}, \quad y_j = (j-1)\Delta y \quad (j=1,2,...,N_y)
+\end{align}
+
+\subsubsection{离散方程}
+内部节点 ($ 2 \leq i \leq N_x-1, 2 \leq j \leq N_y-1 $)：
+\begin{equation}
+    \frac{T_{i+1,j} - 2T_{i,j} + T_{i-1,j}}{(\Delta x)^2} + \frac{T_{i,j+1} - 2T_{i,j} + T_{i,j-1}}{(\Delta y)^2} = 0
+\end{equation}
+
+均匀网格 ($ \Delta x = \Delta y = h $) 简化为：
+\begin{equation}
+    T_{i,j} = \frac{1}{4}\left( T_{i+1,j} + T_{i-1,j} + T_{i,j+1} + T_{i,j-1} \right)
+\end{equation}
+
+\subsubsection{边界节点处理}
+\begin{align}
+    T_{1,j} &= 20 \quad (\forall j),\ \ T_{N_x,j} = 20 \quad (\forall j) \\
+    T_{i,1} &= 20 \quad (\forall i),\ \ T_{i,N_y} = 100 \quad (\forall i)
+\end{align}
+
+\subsection{迭代算法修正}
+\subsubsection{高斯-赛德尔迭代}
+按列优先顺序更新 ($ j $ 从 2 到 $ N_y-1 $)：
+\begin{equation}
+    T_{i,j}^{(k+1)} = \frac{1}{4}\left( T_{i-1,j}^{(k+1)} + T_{i+1,j}^{(k)} + T_{i,j-1}^{(k+1)} + \underbrace{T_{i,j+1}^{(k)}}_{\text{当 } j+1=N_y \text{ 时取 } 100} \right)
+\end{equation}
+
+\subsubsection{SOR 加速算法}
+引入松弛因子 $ \omega $：
+\begin{equation}
+    T_{i,j}^{(k+1)} = (1-\omega)T_{i,j}^{(k)} + \frac{\omega}{4}\left( T_{i-1,j}^{(k+1)} + T_{i+1,j}^{(k)} + T_{i,j-1}^{(k+1)} + T_{i,j+1}^{(k)} \right)
+\end{equation}
+
+\subsection{收敛性分析}
+\begin{itemize}
+    \item \textbf{残差定义}：$ R^{(k)} = \max\limits_{\substack{2 \leq i \leq N_x-1 \\ 2 \leq j \leq N_y-1}} |T_{i,j}^{(k+1)} - T_{i,j}^{(k)}| $
+    \item \textbf{收敛判据}：$ R^{(k)} < \epsilon \quad (\text{通常取 } \epsilon = 10^{-5}) $
+    \item \textbf{最优松弛因子}：
+    \begin{equation}
+        \omega_{\text{opt}} = \frac{2}{1 + \sin\left( \frac{\pi}{\max(N_x,N_y)-1} \right)}
+    \end{equation}
+\end{itemize}
+
+\subsection{数值实现伪代码}
+\begin{verbatim}
+# 初始化温度场
+T = 20 * np.ones((Nx, Ny))
+T[:, -1] = 100  # 设置上边界
+
+for k in range(max_iter):
+    R = 0
+    for j in range(1, Ny-1):
+        for i in range(1, Nx-1):
+            T_new = 0.25 * (T[i+1,j] + T[i-1,j] 
+                   + T[i,j+1] + T[i,j-1])
+            R = max(R, abs(T_new - T[i,j]))
+            T[i,j] = T_new
+    if R < epsilon:
+        break
+\end{verbatim}
+
+\subsection{理论验证}
+\begin{itemize}
+    \item \textbf{对称性检验}：温度场应关于 $ x=7.5\text{cm} $ 对称
+    \item \textbf{极值原理}：内部温度 $ T \in (20,100)^\circ \text{C} $ \\
+    \item \textbf{能量守恒}：总热流量进出平衡
+\end{itemize}
+
+\end{document}
 %附录
 \newpage
 \appendix
