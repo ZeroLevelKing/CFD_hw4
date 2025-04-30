@@ -123,6 +123,7 @@ for k in range(max_iter):
     \item \textbf{能量守恒}：总热流量进出平衡
 \end{itemize}
 
+\newpage
 \section{代码生成与调试}
 
 \subsection{代码结构设计}
@@ -197,11 +198,17 @@ plt.colorbar(label='Temperature (°C)')
 
 \subsection{版本控制记录}
 通过Git进行版本管理，主要提交记录如下：
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{c1.png}
+    \caption{git提交记录}
+    \label{fig:commit}
+\end{figure}
 
-
+\newpage
 \section{结果讨论和物理解释}
 
-\subsection{图1：稳态温度场等温线分布（由task1.py生成）}
+\subsection{稳态温度场等温线分布（由task1.py生成）}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{Figure_1.png}
@@ -215,10 +222,10 @@ plt.colorbar(label='Temperature (°C)')
     \item 中心区域（$x=7.5\ \mathrm{cm}, y=6\ \mathrm{cm}$）温度为$48.7^\circ$C
 \end{itemize}
 
-\subsection{图2：不同松弛因子收敛曲线（由task2.py生成）}
+\subsection{不同松弛因子收敛曲线（由task2.py生成）}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{Figure_2.png}
+    \includegraphics[width=0.65\textwidth]{Figure_2.png}
     \caption{不同松弛因子下的收敛历史}
     \label{fig:converge}
 \end{figure}
@@ -230,7 +237,7 @@ plt.colorbar(label='Temperature (°C)')
     \omega_{\mathrm{opt}} = \frac{2}{1 + \sin\left(\frac{\pi}{N-1}\right)}
 \end{equation}
 
-\subsection{图3：最优松弛因子随网格变化（由task3.py生成）}
+\subsection{最优松弛因子随网格变化（由task3.py生成）}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{Figure_3.png}
