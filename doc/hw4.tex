@@ -198,6 +198,60 @@ plt.colorbar(label='Temperature (°C)')
 \subsection{版本控制记录}
 通过Git进行版本管理，主要提交记录如下：
 
+
+\section{结果讨论和物理解释}
+
+\subsection{图1：稳态温度场等温线分布（由task1.py生成）}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Figure_1.png}
+    \caption{稳态温度场等温线分布}
+    \label{fig:contour}
+\end{figure}
+
+\paragraph{观测结果}
+\begin{itemize}[leftmargin=2em]
+    \item 高温区（$\geq80^\circ$C）集中在上边界（$y=12\ \mathrm{cm}$）
+    \item 中心区域（$x=7.5\ \mathrm{cm}, y=6\ \mathrm{cm}$）温度为$48.7^\circ$C
+\end{itemize}
+
+\subsection{图2：不同松弛因子收敛曲线（由task2.py生成）}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{Figure_2.png}
+    \caption{不同松弛因子下的收敛历史}
+    \label{fig:converge}
+\end{figure}
+
+
+\paragraph{理论分析}
+最优松弛因子理论解为：
+\begin{equation}
+    \omega_{\mathrm{opt}} = \frac{2}{1 + \sin\left(\frac{\pi}{N-1}\right)}
+\end{equation}
+
+\subsection{图3：最优松弛因子随网格变化（由task3.py生成）}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Figure_3.png}
+    \caption{最优松弛因子与网格尺度关系}
+    \label{fig:omega_grid}
+\end{figure}
+
+\paragraph{数值规律}
+当网格步长$h \to 0$时，$\omega_{\mathrm{opt}} \to 2$
+
+
+
+\subsection{综合结论}
+\begin{enumerate}[label=\arabic*), leftmargin=3em]
+    \item 温度场分布验证了拉普拉斯方程的数学特性
+    \item 超松弛法可提升收敛速度4-5倍（$\omega=1.7$ vs $\omega=1.0$）
+    \item 网格加密需配合调整$\omega$以保持计算效率
+    \item 粗网格计算时建议通过预实验标定$\omega$
+\end{enumerate}
+
+
 %附录
 \newpage
 \appendix
@@ -206,10 +260,15 @@ plt.colorbar(label='Temperature (°C)')
     \centering
     \begin{tabular}{c|c|c}
         \hline
-        使用内容 & 工具名称 & 使用目的 \\ \hline
-        hw3.tex 1-9行、图片插入 & Github Copilot & 调整pdf格式，调用宏包，省略插入图片的重复性工作 \\ 
-        .gitignore & Github Copilot & 针对于python和latex的.gitignore文件，完全由Copilot生成  \\
-        main.py 部分matplotlib部分 & Github Copilot & 省略图片绘制的重复性工作
+        使用内容 & 使用比例 & 使用目的 \\ \hline
+        hw4.tex & 60\% & 调整pdf格式，调用宏包，省略插入图片和代码的重复性工作 \\ 
+        .gitignore & 100\% & 针对于python和latex的.gitignore文件，完全由Copilot生成  \\
+        ReadMe & 80\% & 介绍文件，从上次作业继承，结合AI修改 \\
+        common.py & 30\% & 主要迭代和划分网格自己实现，部分绘图代码AI生成  \\
+        task1.py & 0\% & 自己实现 \\
+        task2.py & 0\% & 自己实现 \\
+        task3.py & 0\% & 自己实现 \\
+        \hline
     \end{tabular}
     \label{tab:AI_tools}
 \end{table}
