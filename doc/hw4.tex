@@ -1,12 +1,33 @@
 \documentclass[UTF8]{ctexart}
 \usepackage{amsmath}   
+\usepackage{listings}
 \usepackage{booktabs}  
 \usepackage{geometry}  
 \usepackage{hyperref}
 \usepackage{graphicx} 
+\usepackage{xcolor}
 \usepackage{float}
+\usepackage{array}
+\usepackage{enumitem}
 \graphicspath{{figure/}} % 指定放置图片的子文件夹路径
 \geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{codegray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{codegreen},
+    stringstyle=\color{codepurple},
+    showstringspaces=false
+}
+
 
 \begin{document}
 
@@ -102,7 +123,81 @@ for k in range(max_iter):
     \item \textbf{能量守恒}：总热流量进出平衡
 \end{itemize}
 
-\end{document}
+\section{代码生成与调试}
+
+\subsection{代码结构设计}
+代码采用模块化设计，包含以下文件：
+
+\begin{itemize}[leftmargin=2cm]
+    \item \texttt{common.py}：公共模块（包含网格初始化、迭代算法、绘图函数）
+    \item \texttt{task1.py}：计算稳态温度场并绘制等温线
+    \item \texttt{task2.py}：比较不同松弛因子的收敛速度
+    \item \texttt{task3.py}：研究网格尺度对最优松弛因子的影响
+\end{itemize}
+
+\subsection{核心功能实现}
+
+\subsubsection{网格系统构建}
+物理尺寸与网格索引的映射关系：
+\begin{lstlisting}[language=Python]
+dx = 15 / (Nx-1)  # x方向步长
+dy = 12 / (Ny-1)  # y方向步长
+\end{lstlisting}
+
+边界条件设置代码：
+\begin{lstlisting}[language=Python]
+T = np.full((Nx, Ny), 20.0)  # 初始化
+T[:, -1] = 100.0  # 上边界设为100°C
+\end{lstlisting}
+
+\subsubsection{迭代算法实现}
+高斯-赛德尔迭代核心代码：
+\begin{lstlisting}[language=Python]
+for i in range(1, Nx-1):
+    for j in range(1, Ny-1):
+        temp = 0.25*(T[i+1,j] + T[i-1,j] 
+                   + T[i,j+1] + T[i,j-1])
+        T[i,j] = temp
+\end{lstlisting}
+
+\subsubsection{收敛性判断}
+残差计算与收敛判断：
+\begin{lstlisting}[language=Python]
+residual = max(residual, abs(temp - T[i,j]))
+if residual < 1e-5:
+    break
+\end{lstlisting}
+
+\subsection{可视化功能}
+等温线绘制代码框架：
+\begin{lstlisting}[language=Python]
+plt.contourf(X, Y, T, levels=20, cmap='jet')
+plt.colorbar(label='Temperature (°C)')
+\end{lstlisting}
+
+\subsection{调试关键点}
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{边界验证}：检查T[0,:]和T[-1,:]的值是否符合边界条件
+    \item \textbf{对称性检查}：验证x=7.5cm截面的温度分布对称性
+    \item \textbf{极值原理}：确保内部温度值在20-100°C范围内
+    \item \textbf{网格独立性}：通过加密网格验证解的收敛性
+\end{itemize}
+
+\subsection{运行参数说明}
+\begin{tabular}{|>{\ttfamily}l|l|p{8cm}|}
+    \hline
+    \rmfamily 参数 & 典型值 & 说明 \\
+    \hline
+    Nx, Ny & 31, 25 & 生成60×50网格（步长0.5cm） \\
+    max\_iter & 10000 & 最大迭代次数防止死循环 \\
+    tol & 1e-5 & 收敛判断阈值 \\
+    omega范围 & [0.5,1.9] & 松弛因子实验范围 \\
+    \hline
+\end{tabular}
+
+\subsection{版本控制记录}
+通过Git进行版本管理，主要提交记录如下：
+
 %附录
 \newpage
 \appendix
